@@ -1,0 +1,29 @@
+/* Shared mobile usability rules for customer ordering pages. */
+html { -webkit-text-size-adjust: 100%; }
+body {
+    min-height: 100vh;
+    min-height: 100svh;
+    width: 100%;
+    overflow-x: hidden;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+}
+.container { width: 100%; max-width: 430px; margin-inline: auto; }
+img { max-width: 100%; }
+input, select, textarea, button { font: inherit; }
+input, select, textarea { max-width: 100%; }
+button, a.btn, .review-btn { min-height: 48px; touch-action: manipulation; }
+.quantity button { width: 44px; height: 44px; }
+label.method { min-height: 48px; }
+input[type="checkbox"], input[type="radio"] { width: 20px; height: 20px; accent-color: #542b19; vertical-align: middle; }
+@media (max-width: 480px) {
+    body {
+        padding-top: max(16px, env(safe-area-inset-top));
+        padding-right: max(14px, env(safe-area-inset-right));
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+        padding-left: max(14px, env(safe-area-inset-left));
+    }
+    .container { width: 100%; }
+    input, select, textarea { font-size: 16px; }
+    .item-row, .info { min-width: 0; }
+    .item-row > *, .info > * { overflow-wrap: anywhere; }
+}

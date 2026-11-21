@@ -1,0 +1,156 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Order - Muah Chee</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            margin: 0;
+            padding: 20px 15px;
+            color: #542b19;
+        }
+
+        .container {
+            max-width: 430px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .back {
+            color: #542b19;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .item {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-weight: bold;
+        }
+
+        .details {
+            color: #888;
+            font-size: 13px;
+            margin-top: 8px;
+            line-height: 1.7;
+        }
+
+        .total {
+            background: #f5e4c9;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #542b19;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <a href="/normal-order" class="back">←</a>
+        <h2>Confirm Order</h2>
+    </div>
+
+    <div class="card">
+        <strong>Order Summary</strong>
+
+        {% if order.smallQty > 0 %}
+        <div class="item">
+            <div class="item-row">
+                <span>Small Box × {{ order.smallQty }}</span>
+                <span>RM {{ "%.2f"|format(order.smallSubtotal) }}</span>
+            </div>
+
+            <div class="details">
+                Unit Price: RM {{ "%.2f"|format(order.smallPrice) }}<br>
+                Fried Shallots: {{ "Yes" if order.smallShallots else "No" }}<br>
+                Black Sesame: {{ "Yes" if order.smallSesame else "No" }}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if order.largeQty > 0 %}
+        <div class="item">
+            <div class="item-row">
+                <span>Large Box × {{ order.largeQty }}</span>
+                <span>RM {{ "%.2f"|format(order.largeSubtotal) }}</span>
+            </div>
+
+            <div class="details">
+                Unit Price: RM {{ "%.2f"|format(order.largePrice) }}<br>
+                Fried Shallots: {{ "Yes" if order.largeShallots else "No" }}<br>
+                Black Sesame: {{ "Yes" if order.largeSesame else "No" }}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <div class="total">
+        <span>Total</span>
+        <span>RM {{ "%.2f"|format(order.total) }}</span>
+    </div>
+
+    <a href="/payment" class="btn">Proceed to Payment</a>
+
+</div>
+
+</body>
+</html>

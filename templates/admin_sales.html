@@ -1,0 +1,487 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Report - Muah Chee</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #fff8ef;
+    color: #542b19;
+}
+
+.container {
+    width: 100%;
+    max-width: 390px;
+    margin: auto;
+    padding: 15px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+header a {
+    color: #542b19;
+    text-decoration: none;
+    font-size: 23px;
+}
+
+header h3 {
+    font-size: 18px;
+    margin: 0;
+}
+
+.period-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+    margin-bottom: 15px;
+}
+
+.period-tabs a {
+    text-align: center;
+    text-decoration: none;
+    background: #f3e5d2;
+    color: #542b19;
+    padding: 11px 5px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.period-tabs a.active {
+    background: #542b19;
+    color: white;
+}
+
+.date-label {
+    font-size: 11px;
+    color: #8b7563;
+    margin-bottom: 12px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #ead8c3;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 12px;
+}
+
+.total-card {
+    background: #f5e8d5;
+}
+
+.small-label {
+    font-size: 11px;
+    color: #806b5c;
+}
+
+.big-number {
+    font-size: 26px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.comparison {
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.positive {
+    color: #287b43;
+}
+
+.negative {
+    color: #b44232;
+}
+
+.neutral {
+    color: #806b5c;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 9px;
+    margin-bottom: 12px;
+}
+
+.stat {
+    background: white;
+    border: 1px solid #ead8c3;
+    border-radius: 9px;
+    padding: 12px;
+}
+
+.stat strong {
+    display: block;
+    font-size: 18px;
+    margin-top: 7px;
+}
+
+h4 {
+    margin: 0 0 14px;
+    font-size: 15px;
+}
+
+.chart {
+    height: 145px;
+    display: flex;
+    align-items: flex-end;
+    gap: 9px;
+    padding: 12px 5px 0;
+    background: #c18e4e;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.bar-item {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    min-width: 0;
+}
+
+.bar {
+    width: 70%;
+    max-width: 30px;
+    background: #f5e8d5;
+    border: 1px solid white;
+    border-radius: 5px 5px 0 0;
+    min-height: 3px;
+}
+
+.bar-label {
+    color: white;
+    font-size: 9px;
+    margin-top: 5px;
+    white-space: nowrap;
+}
+
+.seller {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee0d2;
+    font-size: 13px;
+}
+
+.seller:last-child {
+    border-bottom: none;
+}
+
+.seller strong {
+    color: #542b19;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid #eee0d2;
+    font-size: 12px;
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+}
+
+.download-btn {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    background: #542b19;
+    color: white;
+    padding: 13px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.download-btn:hover {
+    background: #70402a;
+}
+
+.note {
+    font-size: 10px;
+    color: #806b5c;
+    line-height: 1.5;
+    margin-top: 10px;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+}
+
+@media print {
+    body {
+        background: white;
+    }
+
+    .period-tabs,
+    .download-btn,
+    header a {
+        display: none;
+    }
+
+    .container {
+        max-width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+
+    <header>
+        <a href="/admin-dashboard">←</a>
+        <h3>Sales Report</h3>
+        <a href="/admin-dashboard">⌂</a>
+    </header>
+
+    <!-- Period Selection -->
+
+    <div class="period-tabs">
+
+        <a href="/admin-sales?period=daily"
+           class="{{ 'active' if period == 'daily' else '' }}">
+            Daily
+        </a>
+
+        <a href="/admin-sales?period=weekly"
+           class="{{ 'active' if period == 'weekly' else '' }}">
+            Weekly
+        </a>
+
+        <a href="/admin-sales?period=monthly"
+           class="{{ 'active' if period == 'monthly' else '' }}">
+            Monthly
+        </a>
+
+    </div>
+
+    <div class="date-label">
+        Reporting period · {{ start_date }} - {{ end_date }}
+    </div>
+
+    <!-- Total Sales -->
+
+    <div class="card total-card">
+
+        <div class="small-label">Total Sales</div>
+
+        <div class="big-number">
+            RM{{ "%.2f"|format(total_sales) }}
+        </div>
+
+        <div class="small-label">
+            {{ total_orders }} orders
+        </div>
+
+    </div>
+
+    <!-- Previous Period Comparison -->
+
+    <div class="card">
+
+        <h4>Compared with Previous Period</h4>
+
+        <div class="small-label">
+            {{ previous_label }} ·
+            RM{{ "%.2f"|format(previous_sales) }}
+        </div>
+
+        <div class="comparison
+            {% if difference > 0 %}
+                positive
+            {% elif difference < 0 %}
+                negative
+            {% else %}
+                neutral
+            {% endif %}">
+
+            {% if difference > 0 %}+{% endif %}
+            {{ "%.2f"|format(percentage_change) }}%
+
+            · RM{{ "%.2f"|format(difference|abs) }}
+
+        </div>
+
+    </div>
+
+    <!-- Sales Statistics -->
+
+    <div class="stats">
+
+        <div class="stat">
+            <div class="small-label">Paid Orders</div>
+            <strong>{{ total_orders }}</strong>
+        </div>
+
+        <div class="stat">
+            <div class="small-label">Total Portions</div>
+            <strong>{{ total_portions }}</strong>
+        </div>
+
+        <div class="stat">
+            <div class="small-label">Small Muah Chee</div>
+            <strong>{{ small_sold }}</strong>
+        </div>
+
+        <div class="stat">
+            <div class="small-label">Large Muah Chee</div>
+            <strong>{{ large_sold }}</strong>
+        </div>
+
+    </div>
+
+    <!-- Sales Trend -->
+
+    <div class="card">
+
+        <h4>Sales Trend</h4>
+
+        {% set max_sales = trend_values|max if trend_values else 0 %}
+
+        <div class="chart">
+
+            {% for value in trend_values %}
+
+                <div class="bar-item">
+
+                    <div class="bar"
+                         title="RM{{ '%.2f'|format(value) }}"
+                         style="height: {{ (value * 100 / max_sales) if max_sales > 0 else 3 }}%;">
+                    </div>
+
+                    <div class="bar-label">
+                        {{ trend_labels[loop.index0] }}
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+        <div class="note">
+            Sales trend is based on paid orders only.
+        </div>
+
+    </div>
+
+    <!-- Best Sellers -->
+
+    <div class="card">
+
+        <h4>Best Sellers</h4>
+
+        {% for item in best_sellers %}
+
+            <div class="seller">
+
+                <span>{{ item.name }}</span>
+
+                <strong>
+                    {{ item.quantity }}
+
+                    {% if loop.index <= 2 %}
+                        portions
+                    {% else %}
+                        orders selected
+                    {% endif %}
+                </strong>
+
+            </div>
+
+        {% endfor %}
+
+        <div class="note">
+            Topping figures represent the number of paid orders
+            selecting each topping, not individual topping portions.
+        </div>
+
+    </div>
+
+    <!-- Period Summary -->
+
+    <div class="card">
+
+        <h4>Period Summary</h4>
+
+        <div class="summary-row">
+            <span>Daily Sales</span>
+            <strong>
+                RM{{ "%.2f"|format(daily_sales) }}
+            </strong>
+        </div>
+
+        <div class="summary-row">
+            <span>{{ period_label }} Sales</span>
+            <strong>
+                RM{{ "%.2f"|format(total_sales) }}
+            </strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Cash Sales</span>
+            <strong>
+                RM{{ "%.2f"|format(cash_sales) }}
+            </strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Touch 'n Go eWallet</span>
+            <strong>
+                RM{{ "%.2f"|format(tng_sales) }}
+            </strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Paid Orders</span>
+            <strong>{{ total_orders }}</strong>
+        </div>
+
+    </div>
+
+    <!-- Download PDF -->
+
+    <a class="download-btn"
+       href="/admin-sales-pdf?period={{ period }}">
+        Download Report (PDF)
+    </a>
+
+</div>
+
+</body>
+</html>
+
+

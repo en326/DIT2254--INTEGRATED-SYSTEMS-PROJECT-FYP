@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Event Orders - Muah Chee</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            color: #542b19;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header a {
+            color: #542b19;
+            text-decoration: none;
+            font-size: 25px;
+        }
+
+        h2 {
+            font-size: 19px;
+        }
+
+        .add-btn {
+            display: block;
+            width: 100%;
+            padding: 13px;
+            background: #542b19;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+
+        .event-card {
+            background: white;
+            border: 1px solid #eadbc8;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 13px;
+        }
+
+        .event-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .event-number {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .status {
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .Pending {
+            background: #fbe7b5;
+            color: #946400;
+        }
+
+        .Preparing {
+            background: #f9dfad;
+            color: #875000;
+        }
+
+        .Completed {
+            background: #dcefdc;
+            color: #28643b;
+        }
+
+        .event-info {
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .event-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #eee0d2;
+            font-size: 13px;
+        }
+
+        .view-link {
+            display: block;
+            text-align: right;
+            margin-top: 12px;
+            color: #80513a;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .empty {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            color: #806b5d;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <a href="/admin-dashboard">←</a>
+        <h2>Event Orders</h2>
+        <a href="/admin-dashboard">⌂</a>
+    </div>
+
+    <a href="/admin-add-event" class="add-btn">
+        + Add Event Order
+    </a>
+
+    <h3 class="section-title">Upcoming and Past Events</h3>
+
+    {% if event_orders %}
+
+        {% for event_id, event in event_orders.items() %}
+
+        <div class="event-card">
+
+            <div class="event-top">
+
+                <span class="event-number">
+                    #{{ event_id }}
+                </span>
+
+                <span class="status {{ event.order_status }}">
+                    {{ event.order_status }}
+                </span>
+
+            </div>
+
+            <div class="event-info">
+
+                <strong>{{ event.customer_name }}</strong>
+
+                <div>
+                    {{ event.event_date }}
+                </div>
+
+                <div>
+                    {{ event.total_portions }} portions
+                </div>
+
+                <div>
+                    {{ event.event_address }}
+                </div>
+
+            </div>
+
+            <div class="event-bottom">
+
+                <span>Total Amount</span>
+
+                <strong>
+                    RM{{ "%.2f"|format(event.total) }}
+                </strong>
+
+            </div>
+
+            <a href="{{ url_for('admin_event_order_details', event_id=event_id) }}"
+               class="view-link">
+                View Details ›
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty">
+            No event orders found.
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,261 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Settings</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #fff8ef;
+    color: #542b19;
+}
+
+.container {
+    max-width: 430px;
+    margin: auto;
+    padding: 18px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+header a {
+    color: #542b19;
+    text-decoration: none;
+    font-size: 23px;
+}
+
+h2 {
+    font-size: 19px;
+    margin: 0;
+}
+
+.subtitle {
+    font-size: 13px;
+    color: #806b5c;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #ead8c3;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 13px;
+}
+
+.card h3 {
+    font-size: 15px;
+    margin: 0 0 15px;
+}
+
+.product-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.product-name {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.price-input {
+    width: 95px;
+    padding: 9px;
+    border: 1px solid #dfcbb5;
+    border-radius: 6px;
+    color: #542b19;
+}
+
+.toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee0d2;
+    font-size: 13px;
+}
+
+.toggle-row:last-child {
+    border-bottom: none;
+}
+
+
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 44px;
+    height: 25px;
+    background: #d6c9bb;
+    border-radius: 20px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.25s ease;
+    flex-shrink: 0;
+    margin: 0;
+}
+
+input[type="checkbox"]::before {
+    content: "";
+    position: absolute;
+    width: 19px;
+    height: 19px;
+    background: white;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.25s ease;
+}
+
+input[type="checkbox"]:checked {
+    background: #542b19;
+}
+
+input[type="checkbox"]:checked::before {
+    transform: translateX(19px);
+}
+
+
+.save-btn {
+    width: 100%;
+    padding: 14px;
+    background: #542b19;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.save-btn:hover {
+    background: #70402a;
+}
+
+.note {
+    font-size: 11px;
+    color: #806b5c;
+    line-height: 1.5;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+        <a href="/admin-dashboard">←</a>
+        <h2>Product Settings</h2>
+        <a href="/admin-dashboard">⌂</a>
+    </header>
+
+    <div class="subtitle">
+        Manage prices, toppings and product availability.
+    </div>
+
+    <form method="POST">
+
+        <!-- Product Prices -->
+        <div class="card">
+            <h3>Product Prices</h3>
+
+            <div class="product-row">
+                <span class="product-name">Small Muah Chee</span>
+                <input class="price-input"
+                       type="number"
+                       name="small_price"
+                       step="0.01"
+                       min="0"
+                       value="{{ '%.2f'|format(products.small_price) }}"
+                       required>
+            </div>
+
+            <div class="toggle-row">
+                <span>Small Muah Chee Available</span>
+                <input type="checkbox"
+                       name="small_available"
+                       {% if products.small_available %}checked{% endif %}>
+            </div>
+
+            <div class="product-row" style="margin-top:15px;">
+                <span class="product-name">Large Muah Chee</span>
+                <input class="price-input"
+                       type="number"
+                       name="large_price"
+                       step="0.01"
+                       min="0"
+                       value="{{ '%.2f'|format(products.large_price) }}"
+                       required>
+            </div>
+
+            <div class="toggle-row">
+                <span>Large Muah Chee Available</span>
+                <input type="checkbox"
+                       name="large_available"
+                       {% if products.large_available %}checked{% endif %}>
+            </div>
+        </div>
+
+        <!-- Optional Toppings -->
+        <div class="card">
+            <h3>Optional Toppings</h3>
+
+            <div class="toggle-row">
+                <span>Fried Shallots</span>
+                <input type="checkbox"
+                       name="fried_shallots_available"
+                       {% if products.fried_shallots_available %}checked{% endif %}>
+            </div>
+
+            <div class="toggle-row">
+                <span>Black Sesame</span>
+                <input type="checkbox"
+                       name="black_sesame_available"
+                       {% if products.black_sesame_available %}checked{% endif %}>
+            </div>
+        </div>
+
+        <!-- Overall Availability -->
+        <div class="card">
+            <h3>Product Availability</h3>
+
+            <div class="toggle-row">
+                <span>Available for Ordering</span>
+                <input type="checkbox"
+                       name="product_available"
+                       {% if products.product_available %}checked{% endif %}>
+            </div>
+
+            <div class="note">
+                Turn off this option to temporarily stop customer ordering.
+            </div>
+        </div>
+
+        <button type="submit" class="save-btn">
+            Save Changes
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>
+

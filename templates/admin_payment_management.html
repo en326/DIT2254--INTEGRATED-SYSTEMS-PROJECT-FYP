@@ -1,0 +1,226 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Management - Muah Chee</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            color: #542b19;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header a {
+            color: #542b19;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        h2 { font-size: 19px; }
+
+        .filters {
+            display: flex;
+            gap: 7px;
+            margin-bottom: 15px;
+        }
+
+        .filters a {
+            flex: 1;
+            text-align: center;
+            padding: 10px 4px;
+            border-radius: 7px;
+            background: #f4e7d4;
+            color: #542b19;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .filters a.active {
+            background: #542b19;
+            color: white;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #eadbc8;
+            border-radius: 7px;
+            margin-bottom: 15px;
+            background: white;
+        }
+
+        .payment-card {
+            background: white;
+            border: 1px solid #eadbc8;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .top, .bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top { margin-bottom: 12px; }
+
+        .payment-id {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .status {
+            padding: 5px 9px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .Paid {
+            background: #dcefdc;
+            color: #28643b;
+        }
+
+        .Pending {
+            background: #fbe7b5;
+            color: #946400;
+        }
+
+        .info {
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .bottom {
+            border-top: 1px solid #eee0d2;
+            padding-top: 10px;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        .view-link {
+            display: block;
+            text-align: right;
+            margin-top: 12px;
+            color: #80513a;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .empty {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <a href="/admin-dashboard">←</a>
+        <h2>Payment Management</h2>
+        <a href="/admin-dashboard">⌂</a>
+    </div>
+
+    <div class="filters">
+        <a href="/admin-payments"
+           class="{{ 'active' if status_filter == 'All' else '' }}">
+            All
+        </a>
+
+        <a href="/admin-payments?status=Pending"
+           class="{{ 'active' if status_filter == 'Pending' else '' }}">
+            Pending
+        </a>
+
+        <a href="/admin-payments?status=Paid"
+           class="{{ 'active' if status_filter == 'Paid' else '' }}">
+            Paid
+        </a>
+    </div>
+
+    <form method="GET" action="/admin-payments">
+        <input type="hidden" name="status" value="{{ status_filter }}">
+
+        <input
+            type="text"
+            name="search"
+            placeholder="Search Payment or Order Number..."
+            value="{{ search_query }}"
+        >
+    </form>
+
+    {% if payment_records %}
+
+        {% for payment_id, payment in payment_records.items() %}
+
+        <div class="payment-card">
+
+            <div class="top">
+                <span class="payment-id">
+                    #{{ payment.order_id }}
+                </span>
+
+                <span class="status {{ payment.payment_status }}">
+                    {{ payment.payment_status }}
+                </span>
+            </div>
+
+            <div class="info">
+                <div>{{ payment.customer_name }}</div>
+                <div>{{ payment.order_type }}</div>
+                <div>{{ payment.payment_method }}</div>
+            </div>
+
+            <div class="bottom">
+                <span>Payment Amount</span>
+                <strong>RM{{ "%.2f"|format(payment.amount) }}</strong>
+            </div>
+
+            <a class="view-link"
+               href="{{ url_for('admin_payment_details', payment_id=payment_id) }}">
+                View Details ›
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty">
+            No payment records found.
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

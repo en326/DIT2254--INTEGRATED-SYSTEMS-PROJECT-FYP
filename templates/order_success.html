@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Success - Muah Chee</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            margin: 0;
+            padding: 25px 15px;
+            color: #542b19;
+        }
+
+        .container {
+            max-width: 430px;
+            margin: auto;
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 75px;
+            height: 75px;
+            background: #eaf4df;
+            color: #527442;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            font-weight: bold;
+            margin: 20px auto;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #806b5d;
+            font-size: 14px;
+        }
+
+        .order-number {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .summary {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        .summary h3 {
+            font-size: 16px;
+            margin-top: 0;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            margin: 15px 0;
+        }
+
+        .details {
+            color: #806b5d;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .total {
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        .payment-info {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: left;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-top: 25px;
+            border: none;
+            border-radius: 10px;
+            background: #542b19;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #70402b;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="success-icon">✓</div>
+
+    <h2>Your order has been received!</h2>
+    <p class="subtitle">Thank you for ordering Muah Chee.</p>
+
+    <div class="order-number">
+        #{{ order.order_number }}
+    </div>
+
+    <div class="summary">
+
+        <h3>Order Summary</h3>
+
+        {% for item in order["items"] %}
+
+            <div class="item-row">
+                <span>
+                    {{ item.size }} Box × {{ item.quantity }}
+                </span>
+
+                <span>
+                    RM {{ "%.2f"|format(item.subtotal) }}
+                </span>
+            </div>
+
+            <div class="details">
+                {% if item.toppings %}
+                    Toppings: {{ item.toppings|join(", ") }}
+                {% else %}
+                    No toppings selected
+                {% endif %}
+            </div>
+
+        {% endfor %}
+
+        <div class="total">
+            <span>Total</span>
+            <span>
+                RM {{ "%.2f"|format(order.total_amount) }}
+            </span>
+        </div>
+
+    </div>
+
+    <div class="payment-info">
+
+        <div>
+            <strong>Payment Method:</strong>
+            {{ order.payment_method }}
+        </div>
+
+        <div>
+            <strong>Payment Status:</strong>
+            {{ order.payment_status }}
+        </div>
+
+    </div>
+
+    <button class="btn" onclick="finishOrder()">
+        Finish
+    </button>
+
+</div>
+
+<script>
+function finishOrder() {
+
+    // Clear completed order information
+    window.location.href = "/";
+}
+</script>
+
+</body>
+</html>

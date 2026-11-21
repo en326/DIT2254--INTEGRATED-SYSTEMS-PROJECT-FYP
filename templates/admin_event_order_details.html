@@ -1,0 +1,244 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Order Details - Muah Chee</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            color: #542b19;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header a {
+            color: #542b19;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 19px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #eadbc8;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            font-size: 15px;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 13px;
+            margin-bottom: 13px;
+        }
+
+        .row span:last-child,
+        .row strong {
+            text-align: right;
+        }
+
+        .total {
+            border-top: 1px solid #eadbc8;
+            padding-top: 12px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #e5d8ca;
+            border-radius: 7px;
+            color: #542b19;
+            background: #fff8ef;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 8px;
+            background: #542b19;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #70402a;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .paid {
+            color: #28643b;
+        }
+
+        .pending {
+            color: #946400;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <a href="{{ url_for('admin_events') }}">←</a>
+        <h2>Event Order Details</h2>
+        <a href="{{ url_for('admin_dashboard') }}">⌂</a>
+    </div>
+
+    <!-- Event Order Number -->
+    <div class="card">
+        <h3>Event Order Information</h3>
+
+        <div class="row">
+            <span>Event Order Number</span>
+            <strong>#{{ event_id }}</strong>
+        </div>
+
+        <div class="row">
+            <span>Order Type</span>
+            <strong>Event Order</strong>
+        </div>
+    </div>
+
+    <!-- Customer Information -->
+    <div class="card">
+        <h3>Customer Information</h3>
+
+        <div class="row">
+            <span>Customer Name</span>
+            <strong>{{ event.customer_name }}</strong>
+        </div>
+
+        <div class="row">
+            <span>Phone Number</span>
+            <strong>{{ event.phone_number }}</strong>
+        </div>
+    </div>
+
+    <!-- Event Information -->
+    <div class="card">
+        <h3>Event Information</h3>
+
+        <div class="row">
+            <span>Event Date</span>
+            <strong>{{ event.event_date }}</strong>
+        </div>
+
+        <div class="row">
+            <span>Event Address</span>
+            <strong>{{ event.event_address }}</strong>
+        </div>
+
+        <div class="row">
+            <span>Total Portions</span>
+            <strong>{{ event.total_portions }}</strong>
+        </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="card">
+        <h3>Order Summary</h3>
+
+        <div class="row">
+            <span>Small Box × {{ event.small }}</span>
+            <strong>RM{{ "%.2f"|format(event.small * 3.50) }}</strong>
+        </div>
+
+        <div class="row">
+            <span>Large Box × {{ event.large }}</span>
+            <strong>RM{{ "%.2f"|format(event.large * 5.00) }}</strong>
+        </div>
+
+        <div class="row total">
+            <span>Total Amount</span>
+            <strong>RM{{ "%.2f"|format(event.total) }}</strong>
+        </div>
+    </div>
+
+    <!-- Payment Information -->
+    <div class="card">
+        <h3>Payment Information</h3>
+
+        <div class="row">
+            <span>Payment Status</span>
+            <strong class="status {{ 'paid' if event.payment_status == 'Paid' else 'pending' }}">
+                {{ event.payment_status }}
+            </strong>
+        </div>
+
+        <div class="row">
+            <span>Payment Method</span>
+            <strong>{{ event.payment_method }}</strong>
+        </div>
+    </div>
+
+    <!-- Update Order Status -->
+    <div class="card">
+        <h3>Order Status</h3>
+
+        <form method="POST">
+
+            <select name="status">
+                <option value="Pending"
+                    {% if event.order_status == "Pending" %}selected{% endif %}>
+                    Pending
+                </option>
+
+                <option value="Preparing"
+                    {% if event.order_status == "Preparing" %}selected{% endif %}>
+                    Preparing
+                </option>
+
+                <option value="Completed"
+                    {% if event.order_status == "Completed" %}selected{% endif %}>
+                    Completed
+                </option>
+            </select>
+
+            <button type="submit">Update Status</button>
+
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>

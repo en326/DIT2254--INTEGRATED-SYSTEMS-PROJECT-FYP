@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Muah Chee</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #542b19;
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #d9a66c;
+        }
+
+        h1 {
+            font-size: 25px;
+            margin: 12px 0 5px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: left;
+        }
+
+        .card h2 {
+            text-align: center;
+            font-size: 19px;
+            margin: 0 0 22px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #e5d8ca;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+
+        .forgot {
+            display: block;
+            text-align: right;
+            color: #80513a;
+            font-size: 13px;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #542b19;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #70402b;
+        }
+
+        .message {
+            color: #b00020;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .footer {
+            font-size: 12px;
+            color: #806b5d;
+            margin-top: 20px;
+        }
+
+        .signup-link {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 13px;
+        }
+
+        .signup-link a {
+         color: #80513a;
+        text-decoration: none;
+        font-weight: bold;
+}
+    </style>
+</head>
+
+<body>
+
+<div class="login-container">
+
+    <h1>Penang Muah Chee</h1>
+    <div class="subtitle">槟城麻芝 · Admin Panel</div>
+
+    <div class="card">
+
+        <h2>Admin Login</h2>
+
+        <form id="loginForm" method="POST" action="{{ url_for('admin_login') }}">
+
+            <label>Username</label>
+            <input type="text" id="username" name="username"
+                   placeholder="Enter username" autocomplete="username" required>
+
+            <label>Password</label>
+            <input type="password" id="password" name="password"
+                   placeholder="Enter password" autocomplete="current-password" required>
+
+            <a href="/admin-forgot-password" class="forgot">
+              Forgot Password?
+            </a>
+
+            <button type="submit">Login</button>
+
+            <div class="signup-link">
+               New admin accounts can be created from the Dashboard by a signed-in admin.
+        </div>
+
+            {% if error %}
+            <p id="message" class="message">{{ error }}</p>
+            {% elif success %}
+            <p id="message" class="message" style="color: green;">Password reset successfully. Sign in with your new password.</p>
+            {% else %}
+            <p id="message" class="message"></p>
+            {% endif %}
+
+        </form>
+
+    </div>
+
+    <div class="footer">
+        © 2026 Penang Muah Chee
+    </div>
+
+</div>
+
+</body>
+</html>

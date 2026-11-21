@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Event Order - Muah Chee</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            margin: 0;
+            padding: 20px 15px;
+            color: #542b19;
+        }
+
+        .container {
+            max-width: 430px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .back {
+            color: #542b19;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .info {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 12px 0;
+            font-size: 14px;
+        }
+
+        .info span:last-child {
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+
+        .item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .small-text {
+            color: #806b5d;
+            font-size: 12px;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        .total {
+            background: #f5e4c9;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #542b19;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .secondary {
+            background: white;
+            color: #542b19;
+            border: 1px solid #e5d8ca;
+        }
+
+        .empty {
+            color: #806b5d;
+            font-size: 13px;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <a href="/event-details" class="back">←</a>
+        <h2>Review Event Order</h2>
+    </div>
+
+    <!-- Event Details -->
+    <div class="card">
+        <strong>Event Details</strong>
+
+        <div class="info">
+            <span>Customer Name</span>
+            <span id="name"></span>
+        </div>
+
+        <div class="info">
+            <span>Phone Number</span>
+            <span id="phone"></span>
+        </div>
+
+        <div class="info">
+            <span>Event Date</span>
+            <span id="date"></span>
+        </div>
+
+        <div class="info">
+            <span>Event Address</span>
+            <span id="address"></span>
+        </div>
+
+        <div class="info">
+            <span>Delivery Method</span>
+            <span id="delivery"></span>
+        </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="card">
+        <strong>Order Summary</strong>
+
+        <div id="items"></div>
+    </div>
+
+    <!-- Total Portions -->
+    <div class="total">
+        <span>Total Portions</span>
+        <span id="portions">0</span>
+    </div>
+
+    <!-- Total Amount -->
+    <div class="total">
+        <span>Total Amount</span>
+        <span id="total">RM 0.00</span>
+    </div>
+
+    <!-- Buttons -->
+    <button type="button" class="btn" onclick="continuePayment()">
+        Continue to Payment
+    </button>
+
+    <a href="/event-details" class="btn secondary">
+        Edit Details
+    </a>
+
+</div>
+
+<script>
+
+    // Get event order from sessionStorage
+    const eventOrder = JSON.parse(
+        sessionStorage.getItem("muahCheeEventOrder") || "null"
+    );
+
+    if (!eventOrder) {
+
+        alert("No event order found. Please enter your details again.");
+
+        window.location.href = "/event-details";
+
+    } else {
+
+        // Display customer information
+        document.getElementById("name").textContent =
+            eventOrder.customerName;
+
+        document.getElementById("phone").textContent =
+            eventOrder.phone;
+
+        document.getElementById("date").textContent =
+            eventOrder.eventDate;
+
+        document.getElementById("address").textContent =
+            eventOrder.eventAddress;
+
+        document.getElementById("delivery").textContent =
+            eventOrder.delivery;
+
+        // Product information
+        const products = [
+            {
+                name: "Small Box",
+                price: 3.50,
+                quantity: Number(eventOrder.smallQty) || 0,
+                shallots: eventOrder.smallShallots,
+                sesame: eventOrder.smallSesame
+            },
+            {
+                name: "Large Box",
+                price: 5.00,
+                quantity: Number(eventOrder.largeQty) || 0,
+                shallots: eventOrder.largeShallots,
+                sesame: eventOrder.largeSesame
+            }
+        ];
+
+        const itemsDiv = document.getElementById("items");
+
+        let total = 0;
+        let portions = 0;
+
+        // Display selected products
+        products.forEach(item => {
+
+            if (item.quantity > 0) {
+
+                const subtotal = item.price * item.quantity;
+
+                total += subtotal;
+                portions += item.quantity;
+
+                const toppings = [];
+
+                if (item.shallots) {
+                    toppings.push("Fried Shallots");
+                }
+
+                if (item.sesame) {
+                    toppings.push("Black Sesame");
+                }
+
+                const itemDiv = document.createElement("div");
+                itemDiv.className = "item";
+
+                const row = document.createElement("div");
+                row.className = "item-row";
+
+                const productName = document.createElement("span");
+                productName.textContent =
+                    item.name + " × " + item.quantity;
+
+                const productPrice = document.createElement("span");
+                productPrice.textContent =
+                    "RM " + subtotal.toFixed(2);
+
+                row.appendChild(productName);
+                row.appendChild(productPrice);
+
+                const toppingText = document.createElement("div");
+                toppingText.className = "small-text";
+                toppingText.textContent =
+                    "Toppings: " +
+                    (toppings.length > 0
+                        ? toppings.join(", ")
+                        : "None");
+
+                itemDiv.appendChild(row);
+                itemDiv.appendChild(toppingText);
+
+                itemsDiv.appendChild(itemDiv);
+            }
+        });
+
+        if (portions === 0) {
+            itemsDiv.innerHTML =
+                '<p class="empty">No products selected.</p>';
+        }
+
+        // Display totals
+        document.getElementById("portions").textContent =
+            portions;
+
+        document.getElementById("total").textContent =
+            "RM " + total.toFixed(2);
+
+        // Save calculated values
+        eventOrder.total = total;
+        eventOrder.portions = portions;
+
+        sessionStorage.setItem(
+            "muahCheeEventOrder",
+            JSON.stringify(eventOrder)
+        );
+    }
+
+    // Continue to payment
+    function continuePayment() {
+
+        if (!eventOrder || Number(eventOrder.portions) <= 0) {
+
+        alert("Please select at least one product.");
+
+        return;
+    }
+
+    // Go to Event Payment page
+    window.location.href = "/event-payment";
+}
+
+</script>
+
+</body>
+</html>

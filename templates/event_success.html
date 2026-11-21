@@ -1,0 +1,409 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Event Order Received - Muah Chee</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            margin: 0;
+            padding: 25px 15px;
+            color: #542b19;
+        }
+
+        .container {
+            max-width: 430px;
+            margin: auto;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #eaf5df;
+            color: #527843;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            margin: 10px auto 20px;
+        }
+
+        .heading {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .heading h2 {
+            font-size: 20px;
+            margin: 0 0 10px;
+        }
+
+        .heading p {
+            font-size: 13px;
+            color: #806b5d;
+            margin: 0;
+        }
+
+        .order-number {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .order-number span {
+            display: block;
+            color: #806b5d;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .order-number strong {
+            font-size: 19px;
+        }
+
+        .card {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 11px 0;
+            font-size: 13px;
+        }
+
+        .info span:first-child {
+            color: #806b5d;
+        }
+
+        .info span:last-child {
+            text-align: right;
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        .item {
+            border-bottom: 1px solid #eee;
+            padding: 12px 0;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .small-text {
+            font-size: 11px;
+            color: #806b5d;
+            margin-top: 7px;
+            line-height: 1.5;
+        }
+
+        .total {
+            background: #f5e4c9;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .payment-status {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        .payment-status p {
+            margin: 8px 0 0;
+            color: #806b5d;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #542b19;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #70402b;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="success-icon">✓</div>
+
+    <div class="heading">
+        <h2>Your event order is confirmed!</h2>
+        <p>活动订单已成功提交</p>
+    </div>
+
+    <div class="order-number">
+        <span>EVENT ORDER</span>
+        <strong id="orderNumber">#EV-000001</strong>
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">Event Summary</div>
+
+        <div class="info">
+            <span>Customer Name</span>
+            <span id="customerName">-</span>
+        </div>
+
+        <div class="info">
+            <span>Phone Number</span>
+            <span id="phone">-</span>
+        </div>
+
+        <div class="info">
+            <span>Event Date</span>
+            <span id="eventDate">-</span>
+        </div>
+
+        <div class="info">
+            <span>Address</span>
+            <span id="address">-</span>
+        </div>
+
+        <div class="info">
+            <span>Delivery Method</span>
+            <span id="delivery">-</span>
+        </div>
+
+        <div id="items"></div>
+
+    </div>
+
+    <div class="total">
+        <span>Total Portions</span>
+        <span id="portions">0</span>
+    </div>
+
+    <div class="total">
+        <span>Total Amount</span>
+        <span id="total">RM 0.00</span>
+    </div>
+
+    <div class="payment-status">
+        <strong>Payment Status: </strong>
+        <span id="paymentStatus">Pending Verification</span>
+
+        <p id="paymentMessage">
+            Please show your payment confirmation to the seller.
+        </p>
+    </div>
+
+    <button class="btn" onclick="finishOrder()">
+        Finish
+    </button>
+
+</div>
+
+<script>
+
+    const eventOrder = JSON.parse(
+        sessionStorage.getItem("muahCheeEventOrder") || "null"
+    );
+
+    if (!eventOrder) {
+
+        alert("Event order information not found.");
+
+        window.location.href = "/event-details";
+
+    } else {
+
+        // Generate an event order number once
+        if (!eventOrder.orderNumber) {
+
+            eventOrder.orderNumber =
+                "EV-" + Date.now().toString().slice(-6);
+
+            sessionStorage.setItem(
+                "muahCheeEventOrder",
+                JSON.stringify(eventOrder)
+            );
+        }
+
+        document.getElementById("orderNumber").textContent =
+            "#" + eventOrder.orderNumber;
+
+        // Customer information
+        document.getElementById("customerName").textContent =
+            eventOrder.customerName || "-";
+
+        document.getElementById("phone").textContent =
+            eventOrder.phone || "-";
+
+        document.getElementById("eventDate").textContent =
+            eventOrder.eventDate || "-";
+
+        document.getElementById("address").textContent =
+            eventOrder.eventAddress || "-";
+
+        document.getElementById("delivery").textContent =
+            eventOrder.delivery || "-";
+
+        // Product information
+        const products = [
+            {
+                name: "Small Box",
+                price: 3.50,
+                quantity: Number(eventOrder.smallQty) || 0,
+                shallots: eventOrder.smallShallots,
+                sesame: eventOrder.smallSesame
+            },
+            {
+                name: "Large Box",
+                price: 5.00,
+                quantity: Number(eventOrder.largeQty) || 0,
+                shallots: eventOrder.largeShallots,
+                sesame: eventOrder.largeSesame
+            }
+        ];
+
+        const itemsDiv = document.getElementById("items");
+
+        let total = 0;
+        let portions = 0;
+
+        products.forEach(item => {
+
+            if (item.quantity > 0) {
+
+                const subtotal = item.price * item.quantity;
+
+                total += subtotal;
+                portions += item.quantity;
+
+                const toppings = [];
+
+                if (item.shallots) {
+                    toppings.push("Fried Shallots");
+                }
+
+                if (item.sesame) {
+                    toppings.push("Black Sesame");
+                }
+
+                const itemDiv = document.createElement("div");
+                itemDiv.className = "item";
+
+                const row = document.createElement("div");
+                row.className = "item-row";
+
+                const name = document.createElement("span");
+                name.textContent =
+                    item.name + " × " + item.quantity;
+
+                const price = document.createElement("span");
+                price.textContent =
+                    "RM " + subtotal.toFixed(2);
+
+                row.appendChild(name);
+                row.appendChild(price);
+
+                const toppingText = document.createElement("div");
+                toppingText.className = "small-text";
+
+                toppingText.textContent =
+                    "Toppings: " +
+                    (toppings.length > 0
+                        ? toppings.join(", ")
+                        : "None");
+
+                itemDiv.appendChild(row);
+                itemDiv.appendChild(toppingText);
+
+                itemsDiv.appendChild(itemDiv);
+            }
+        });
+
+        // Total
+        document.getElementById("portions").textContent =
+            portions;
+
+        document.getElementById("total").textContent =
+            "RM " + total.toFixed(2);
+
+        // Payment status
+        const status = eventOrder.paymentStatus || "Pending Verification";
+
+        document.getElementById("paymentStatus").textContent = status;
+
+        if (eventOrder.paymentMethod === "Cash") {
+
+            document.getElementById("paymentMessage").textContent =
+                "Please pay the seller according to the agreed arrangement.";
+
+        } else {
+
+            document.getElementById("paymentMessage").textContent =
+                "Please show your successful payment transaction to the seller for verification.";
+        }
+
+        // Save updated order
+        eventOrder.total = total;
+        eventOrder.portions = portions;
+
+        sessionStorage.setItem(
+            "muahCheeEventOrder",
+            JSON.stringify(eventOrder)
+        );
+    }
+
+    function finishOrder() {
+
+        sessionStorage.removeItem("muahCheeEventOrder");
+
+        window.location.href = "/";
+    }
+
+</script>
+
+</body>
+</html>

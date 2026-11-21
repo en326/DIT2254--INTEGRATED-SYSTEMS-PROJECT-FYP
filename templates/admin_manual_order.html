@@ -1,0 +1,221 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Walk-in Order - Muah Chee</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            color: #542b19;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header a {
+            color: #542b19;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 19px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #eadbc8;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            font-size: 15px;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 7px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #e5d8ca;
+            border-radius: 7px;
+            background: #fff8ef;
+            color: #542b19;
+            margin-bottom: 14px;
+            font-size: 14px;
+        }
+
+        .quantity-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 12px;
+        }
+
+        .quantity-row input {
+            width: 90px;
+            margin: 0;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        .checkbox-row input {
+            width: auto;
+            margin: 0;
+        }
+
+        .total {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #eadbc8;
+            padding-top: 14px;
+            font-weight: bold;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            background: #542b19;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .note {
+            font-size: 12px;
+            color: #806b5d;
+            margin-top: -8px;
+            margin-bottom: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <a href="/admin-dashboard">←</a>
+        <h2>Manual Walk-in Order</h2>
+        <a href="/admin-dashboard">⌂</a>
+    </div>
+
+    <form method="POST">
+
+        <div class="card">
+            <h3>Customer Information</h3>
+
+            <label>Customer Name</label>
+            <input
+                type="text"
+                name="customer_name"
+                placeholder="Walk-in customer"
+            >
+
+            <label>Phone Number</label>
+            <input
+                type="tel"
+                name="phone_number"
+                placeholder="Optional"
+            >
+
+            <p class="note">Customer name and phone number are optional.</p>
+        </div>
+
+        <div class="card">
+            <h3>Order Items</h3>
+
+            <div class="quantity-row">
+                <span>Small - RM3.50</span>
+                <input
+                    type="number"
+                    name="small"
+                    min="0"
+                    value="0"
+                >
+            </div>
+
+            <div class="quantity-row">
+                <span>Large - RM5.00</span>
+                <input
+                    type="number"
+                    name="large"
+                    min="0"
+                    value="0"
+                >
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Toppings</h3>
+
+            <label class="checkbox-row">
+                <input type="checkbox" name="fried_shallots" value="Yes">
+                Fried Shallots
+            </label>
+
+            <label class="checkbox-row">
+                <input type="checkbox" name="black_sesame" value="Yes">
+                Black Sesame
+            </label>
+        </div>
+
+        <div class="card">
+            <h3>Payment</h3>
+
+            <label>Payment Method</label>
+            <select name="payment_method" required>
+                <option value="Cash">Cash</option>
+                <option value="Touch 'n Go eWallet">Touch 'n Go eWallet</option>
+            </select>
+
+            <div class="total">
+                <span>Total Amount</span>
+                <span>Calculated when submitted</span>
+            </div>
+        </div>
+
+        <button type="submit">Create Walk-in Order</button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

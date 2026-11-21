@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - Muah Chee</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #fff8ef;
+    color: #542b19;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 18px;
+    background: white;
+    border-bottom: 1px solid #eadccf;
+}
+
+.menu-btn {
+    background: #542b19;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 22px;
+    cursor: pointer;
+    width: auto;
+}
+
+header h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+
+.welcome {
+    margin-bottom: 20px;
+}
+
+.welcome h3 {
+    margin-bottom: 5px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.stat-card {
+    background: #f5e8d5;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.stat-card h2 {
+    margin: 8px 0;
+    font-size: 25px;
+}
+
+.stat-card p {
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+.section {
+    margin-top: 25px;
+}
+
+.actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.action-btn {
+    background: white;
+    border: 1px solid #d9a66c;
+    border-radius: 10px;
+    padding: 20px;
+    color: #542b19;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.action-btn:hover {
+    background: #f5e8d5;
+}
+
+.recent-orders {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    overflow-x: auto;
+}
+
+.order {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 5px;
+    border-bottom: 1px solid #eee0d2;
+    font-size: 13px;
+}
+
+.order:last-child {
+    border-bottom: none;
+}
+
+.order-info {
+    min-width: 0;
+}
+
+.order-info strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.order-info span {
+    color: #806b5c;
+}
+
+.order-amount {
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+.empty-message {
+    text-align: center;
+    padding: 20px;
+    color: #806b5c;
+}
+
+nav {
+    display: none;
+    background: white;
+    padding: 15px;
+}
+
+nav a {
+    display: block;
+    padding: 12px;
+    color: #542b19;
+    text-decoration: none;
+    border-bottom: 1px solid #eee0d2;
+}
+
+nav a:hover {
+    background: #fff8ef;
+}
+
+nav.show {
+    display: block;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+
+    header h2 {
+        font-size: 19px;
+    }
+
+    .stat-card {
+        padding: 15px 10px;
+    }
+
+    .stat-card h2 {
+        font-size: 22px;
+    }
+
+    .order {
+        font-size: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    <h2>Dashboard</h2>
+</header>
+
+<nav id="menu">
+    <a href="/admin-dashboard">Dashboard</a>
+    <a href="/admin-order-management">Order Management</a>
+    <a href="/admin-events">Event Orders</a>
+    <a href="/admin-payments">Payment Management</a>
+    <a href="/admin-sales">Sales Report</a>
+    <a href="/admin-purchases">Purchase Management</a>
+    <a href="/admin-product-settings">Product Settings</a>
+    <a href="/admin-signup">Create Admin Account</a>
+    <a href="/admin-logout">Logout</a>
+</nav>
+
+<div class="container">
+
+    <div class="welcome">
+        <h3>Welcome, Admin!</h3>
+        <p>Here's your business overview.</p>
+    </div>
+
+    <!-- Dashboard Statistics -->
+    <div class="stats">
+
+        <div class="stat-card">
+            <div>🛍️</div>
+            <h2>{{ new_orders }}</h2>
+            <p>Today's Orders</p>
+        </div>
+
+        <div class="stat-card">
+            <div>🕒</div>
+            <h2>{{ pending_orders }}</h2>
+            <p>Pending Orders Today</p>
+        </div>
+
+        <div class="stat-card">
+            <div>📦</div>
+            <h2>{{ total_event_orders }}</h2>
+            <p>Total Event Orders</p>
+        </div>
+
+        <div class="stat-card">
+            <div>📊</div>
+            <h2>RM{{ "%.2f"|format(today_sales) }}</h2>
+            <p>Today's Paid Sales</p>
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="section">
+
+        <h3>Quick Actions</h3>
+
+        <div class="actions">
+
+            <button class="action-btn"
+                onclick="location.href='/admin-manual-order'">
+                ➕<br><br>
+                Add Manual Order
+            </button>
+
+            <button class="action-btn"
+                onclick="location.href='/admin-add-event'">
+                📅<br><br>
+                Add Event Order
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="section">
+
+        <h3>Recent Orders</h3>
+
+        <div class="recent-orders">
+
+            {% if recent_orders %}
+
+                {% for order in recent_orders %}
+
+                <div class="order">
+
+                    <div class="order-info">
+
+                        <strong>
+                            #{{ order.order_id }}
+                        </strong>
+
+                        <span>
+                            {{ order["items"] }}
+                        </span>
+
+                        <br>
+
+                        <span>
+                            {{ order.order_type }} ·
+                            {{ order.order_status }}
+                        </span>
+
+                    </div>
+
+                    <div class="order-amount">
+                        RM{{ "%.2f"|format(order.total) }}
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty-message">
+                    No orders available yet.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+function toggleMenu() {
+    document.getElementById("menu").classList.toggle("show");
+}
+</script>
+
+</body>
+</html>
+

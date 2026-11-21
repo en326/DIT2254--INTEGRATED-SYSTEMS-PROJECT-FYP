@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Payment - Muah Chee</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            margin: 0;
+            padding: 20px 15px;
+            color: #542b19;
+        }
+
+        .container {
+            max-width: 430px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .back {
+            color: #542b19;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .amount {
+            background: #f5e4c9;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        .method {
+            display: block;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            margin-top: 12px;
+            cursor: pointer;
+        }
+
+        .qr-section {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .qr-section img {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .payment-notice {
+            background: #f5e4c9;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .payment-notice p {
+            color: #806b5d;
+            font-size: 12px;
+            line-height: 1.5;
+            margin-bottom: 0;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-top: 18px;
+            border: none;
+            border-radius: 10px;
+            background: #542b19;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #70402b;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <a href="/event-review" class="back">←</a>
+        <h2>Event Payment</h2>
+    </div>
+
+    <div class="amount">
+        <span>Amount Due</span>
+        <span id="amount">RM 0.00</span>
+    </div>
+
+    <div class="card">
+
+        <strong>Choose Payment Method</strong>
+
+        <label class="method">
+            <input type="radio" name="payment" value="Cash">
+            Cash
+        </label>
+
+        <label class="method">
+            <input type="radio" name="payment" value="TNG eWallet / DuitNow">
+            TNG eWallet / DuitNow
+        </label>
+
+        <div class="qr-section" id="qrSection">
+
+            <h3>DuitNow QR Code</h3>
+
+            <img
+                src="{{ url_for('static', filename='images/qr_code.jpeg') }}"
+                alt="Touch n Go DuitNow QR Code"
+            >
+
+            <p>Scan using any supported banking app or eWallet.</p>
+
+            <p>
+                <strong>Account Name: CHENG SIAK YAM</strong>
+            </p>
+
+            <div class="payment-notice">
+                <strong>Show successful payment to the seller</strong>
+                <p>
+                    Please show your successful payment transaction
+                    to the seller for verification.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <button class="btn" onclick="confirmPayment()">
+        Confirm Payment
+    </button>
+
+</div>
+
+<script>
+
+    const eventOrder = JSON.parse(
+        sessionStorage.getItem("muahCheeEventOrder") || "null"
+    );
+
+    if (!eventOrder) {
+        alert("Event order information not found.");
+        window.location.href = "/event-details";
+    } else {
+        document.getElementById("amount").textContent =
+            "RM " + Number(eventOrder.total).toFixed(2);
+    }
+
+    const paymentOptions = document.querySelectorAll(
+        'input[name="payment"]'
+    );
+
+    paymentOptions.forEach(option => {
+        option.addEventListener("change", function() {
+
+            document.getElementById("qrSection").style.display =
+                this.value === "TNG eWallet / DuitNow"
+                    ? "block"
+                    : "none";
+
+        });
+    });
+
+    function confirmPayment() {
+
+        const selected = document.querySelector(
+            'input[name="payment"]:checked'
+        );
+
+        if (!selected) {
+            alert("Please choose a payment method.");
+            return;
+        }
+
+        eventOrder.paymentMethod = selected.value;
+
+        eventOrder.paymentStatus =
+            selected.value === "Cash"
+                ? "Pending Payment"
+                : "Pending Verification";
+
+        sessionStorage.setItem(
+            "muahCheeEventOrder",
+            JSON.stringify(eventOrder)
+        );
+
+        if (selected.value === "Cash") {
+            alert("Please pay the seller at the stall.");
+        } else {
+            alert("Please complete your payment. The seller will verify it.");
+        }
+
+        window.location.href = "/event-success";
+    }
+    
+    function continueToPayment() {
+    window.location.href = "/event-payment";
+}
+</script>
+
+</body>
+</html>

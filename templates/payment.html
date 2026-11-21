@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Muah Chee</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            margin: 0;
+            padding: 20px 15px;
+            color: #542b19;
+        }
+
+        .container {
+            max-width: 430px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .back {
+            color: #542b19;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .amount {
+            background: #f5e4c9;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        .method {
+            display: block;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            margin-top: 12px;
+            cursor: pointer;
+        }
+
+        .method input {
+            margin-right: 8px;
+        }
+
+        .qr-section {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .qr-section img {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-top: 18px;
+            border: none;
+            border-radius: 10px;
+            background: #542b19;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn:disabled {
+            background: #aaa;
+            cursor: not-allowed;
+        }
+
+        .payment-notice {
+            background: #f5e4c9;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .payment-notice p {
+            color: #806b5d;
+            font-size: 12px;
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+
+        .error-message {
+            display: none;
+            color: #b00020;
+            background: #ffe8e8;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <a href="/review-order" class="back">←</a>
+        <h2>Payment</h2>
+    </div>
+
+    <!-- Order Amount -->
+    <div class="amount">
+        <span>Amount Due</span>
+        <span id="amount">
+            RM {{ "%.2f"|format(order.total) }}
+        </span>
+    </div>
+
+    <!-- Payment Methods -->
+    <div class="card">
+
+        <strong>Choose Payment Method</strong>
+
+        <label class="method">
+            <input type="radio" name="payment" value="Cash">
+            Cash
+        </label>
+
+        <label class="method">
+            <input type="radio" name="payment" value="TNG">
+            TNG eWallet / DuitNow
+        </label>
+
+        <!-- TNG QR Code -->
+        <div class="qr-section" id="qrSection">
+
+            <h3>Scan DuitNow QR Code</h3>
+
+            <img
+                src="{{ url_for('static', filename='images/qr_code.jpeg') }}"
+                alt="Touch n Go DuitNow QR Code"
+            >
+
+            <p>Scan using any supported banking app or eWallet.</p>
+
+            <p>
+                <strong>Account Name: CHENG SIAK YAM</strong>
+            </p>
+
+            <div class="payment-notice">
+                <strong>Show successful payment to the seller</strong>
+
+                <p>
+                    Please show your successful payment transaction
+                    to the seller for verification.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="error-message" id="errorMessage"></div>
+
+    <button
+        class="btn"
+        id="confirmButton"
+        type="button"
+        onclick="confirmPayment()"
+    >
+        Confirm Payment
+    </button>
+
+</div>
+
+
+<script>
+
+// Show QR code when TNG is selected
+const paymentOptions = document.querySelectorAll(
+    'input[name="payment"]'
+);
+
+paymentOptions.forEach(option => {
+    option.addEventListener("change", function() {
+        document.getElementById("qrSection").style.display =
+            this.value === "TNG" ? "block" : "none";
+    });
+});
+
+
+// Confirm payment and save order to MySQL
+async function confirmPayment() {
+
+    const selected = document.querySelector(
+        'input[name="payment"]:checked'
+    );
+
+    if (!selected) {
+        alert("Please choose a payment method.");
+        return;
+    }
+
+    const button = document.getElementById("confirmButton");
+
+    button.disabled = true;
+    button.textContent = "Processing...";
+
+    try {
+
+        const response = await fetch("/confirm-normal-payment", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                payment_method: selected.value
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(
+                result.message || "Unable to save your order."
+            );
+        }
+
+        if (selected.value === "TNG") {
+            alert(
+                "Please complete your payment. The seller will verify it."
+            );
+        } else {
+            alert(
+                "Cash payment selected. Please pay at the stall."
+            );
+        }
+
+        window.location.href = result.redirect_url;
+
+    } catch (error) {
+
+        console.error("Payment Error:", error);
+        alert(error.message);
+
+        button.disabled = false;
+        button.textContent = "Confirm Payment";
+    }
+}
+
+</script>
+
+
+</body>
+</html>
+
+

@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Sign Up - Muah Chee</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #542b19;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        .close {
+            display: block;
+            text-align: right;
+            text-decoration: none;
+            color: #542b19;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 21px;
+            margin: 5px 0 25px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #e5d8ca;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #542b19;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #70402b;
+        }
+
+        .message {
+            text-align: center;
+            font-size: 13px;
+            margin-top: 15px;
+        }
+
+        .back {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        .back a {
+            color: #80513a;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <a href="/admin-login" class="close">×</a>
+
+        <h2>Create Admin Account</h2>
+
+        <form id="signupForm" method="POST" action="{{ url_for('admin_signup') }}">
+
+            <label>Username</label>
+            <input type="text" id="username" name="username"
+                   placeholder="Enter username" minlength="3" maxlength="50"
+                   autocomplete="username" required>
+
+            <label>Email</label>
+            <input type="email" id="email" name="email"
+                   placeholder="Enter email" maxlength="254"
+                   autocomplete="email" required>
+
+            <label>Password</label>
+            <input type="password" id="password" name="password"
+                   placeholder="Enter password" minlength="8"
+                   autocomplete="new-password" required>
+
+            <label>Confirm Again Password</label>
+            <input type="password" id="confirmPassword" name="confirm_password"
+                   placeholder="Confirm your password" minlength="8"
+                   autocomplete="new-password" required>
+
+            <button type="submit">Create</button>
+
+            {% if error %}
+            <p id="message" class="message" style="color: red;">{{ error }}</p>
+            {% elif success %}
+            <p id="message" class="message" style="color: green;">Admin account created successfully.</p>
+            {% else %}
+            <p id="message" class="message"></p>
+            {% endif %}
+
+        </form>
+
+    </div>
+
+    <div class="back">
+        Already have an account?
+        <a href="/admin-login">Admin Login</a>
+    </div>
+
+</div>
+
+</body>
+</html>

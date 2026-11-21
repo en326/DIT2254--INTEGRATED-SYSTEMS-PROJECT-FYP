@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purchase Management</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #fff8ef;
+    color: #542b19;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+    padding: 18px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+header a {
+    color: #542b19;
+    text-decoration: none;
+    font-size: 22px;
+}
+
+h3 { margin: 0; font-size: 18px; }
+
+.card {
+    background: white;
+    border: 1px solid #ead8c3;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 13px;
+}
+
+.total {
+    background: #f3e5d2;
+}
+
+.label {
+    font-size: 12px;
+    color: #806b5c;
+}
+
+.amount {
+    font-size: 25px;
+    font-weight: bold;
+    margin-top: 7px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ead8c3;
+    border-radius: 7px;
+    margin: 10px 0;
+}
+
+button, .btn {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 7px;
+    background: #542b19;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.purchase {
+    background: white;
+    border: 1px solid #ead8c3;
+    border-radius: 9px;
+    padding: 14px;
+    margin-bottom: 12px;
+}
+
+.purchase p {
+    font-size: 12px;
+    color: #806b5c;
+    margin: 7px 0;
+}
+
+.purchase a {
+    color: #542b19;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.empty {
+    text-align: center;
+    padding: 25px;
+    color: #806b5c;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+    <a href="/admin-dashboard">←</a>
+    <h3>Purchase Management</h3>
+    <a href="/admin-dashboard">⌂</a>
+</header>
+
+<div class="card total">
+    <div class="label">Total Purchase Cost</div>
+    <div class="amount">RM{{ "%.2f"|format(total_cost) }}</div>
+    <div class="label">{{ purchases|length }} purchase records</div>
+</div>
+
+<a class="btn" href="/admin-add-purchase">+ Add Purchase</a>
+
+<div class="card" style="margin-top:15px;">
+    <form method="GET" action="/admin-purchases">
+        <input
+            type="text"
+            name="search"
+            placeholder="Search supplier or material..."
+            value="{{ search }}"
+        >
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+<h4>Purchase Records</h4>
+
+{% if purchases %}
+
+    {% for purchase_id, purchase in purchases.items() %}
+
+    <div class="purchase">
+
+        <strong>{{ purchase_id }}</strong>
+
+        <p>{{ purchase.supplier_name }}</p>
+
+        <p>{{ purchase.material_name }} -
+        {{ purchase.quantity }} {{ purchase.unit }}</p>
+
+        <p>{{ purchase.purchase_date }}</p>
+
+        <strong>
+            RM{{ "%.2f"|format(purchase.total_cost) }}
+        </strong>
+
+        <p>
+            <a href="{{ url_for('admin_purchase_details',
+            purchase_id=purchase_id) }}">View Details →</a>
+        </p>
+
+    </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <div class="card empty">
+        No purchase records found.
+    </div>
+
+{% endif %}
+
+</div>
+</body>
+</html>

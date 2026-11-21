@@ -1,0 +1,366 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Build Your Box - Muah Chee</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            margin: 0;
+            padding: 20px 15px;
+            color: #4d2b1b;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 430px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .back {
+            text-decoration: none;
+            color: #542b19;
+            font-size: 22px;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        .product-card {
+            background: white;
+            padding: 15px;
+            border-radius: 14px;
+            margin-bottom: 15px;
+        }
+
+        .product-card h3 {
+            margin: 0 0 8px;
+        }
+
+        .price {
+            color: #986039;
+            font-weight: bold;
+        }
+
+        .quantity {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .quantity button {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            background: #f3e4d3;
+            color: #542b19;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .quantity span {
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .toppings {
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+
+        .toppings label {
+            display: block;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .total {
+            background: #f5e4c9;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .review-btn {
+            display: block;
+            width: 100%;
+            background: #542b19;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .review-btn:disabled {
+            background: #aaa;
+            cursor: not-allowed;
+        }
+
+        .product-image {
+            width: 100%;
+            max-width: 180px;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 12px;
+            display: block;
+            margin: 10px auto;
+        }
+
+        .unavailable-message {
+            background: #f5e4c9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: #8b3d2e;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <a href="/" class="back">←</a>
+        <h2>Build Your Box</h2>
+    </div>
+
+    {% if not products.product_available %}
+
+        <div class="unavailable-message">
+            <strong>Ordering Currently Unavailable</strong>
+            <p>Sorry! We are temporarily not accepting orders.</p>
+        </div>
+
+    {% else %}
+
+        {% if products.small_available %}
+
+        <div class="product-card">
+            <h3>Small Box</h3>
+
+            <img src="{{ url_for('static', filename='images/small_muachi.jpeg') }}"
+                 alt="Small Muah Chee"
+                 class="product-image">
+
+            <p class="price">
+                RM {{ "%.2f"|format(products.small_price) }}
+            </p>
+
+            <div class="quantity">
+                <button type="button" onclick="changeQty('small', -1)">−</button>
+                <span id="smallQty">0</span>
+                <button type="button" onclick="changeQty('small', 1)">+</button>
+            </div>
+
+            {% if products.fried_shallots_available or products.black_sesame_available %}
+            <div class="toppings">
+                <strong>Toppings</strong>
+
+                {% if products.fried_shallots_available %}
+                <label>
+                    <input type="checkbox" id="smallShallots">
+                    Fried Shallots
+                </label>
+                {% endif %}
+
+                {% if products.black_sesame_available %}
+                <label>
+                    <input type="checkbox" id="smallSesame">
+                    Black Sesame
+                </label>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        {% endif %}
+
+
+        {% if products.large_available %}
+
+        <div class="product-card">
+            <h3>Large Box</h3>
+
+            <img src="{{ url_for('static', filename='images/big_muachi.jpeg') }}"
+                 alt="Large Muah Chee"
+                 class="product-image">
+
+            <p class="price">
+                RM {{ "%.2f"|format(products.large_price) }}
+            </p>
+
+            <div class="quantity">
+                <button type="button" onclick="changeQty('large', -1)">−</button>
+                <span id="largeQty">0</span>
+                <button type="button" onclick="changeQty('large', 1)">+</button>
+            </div>
+
+            {% if products.fried_shallots_available or products.black_sesame_available %}
+            <div class="toppings">
+                <strong>Toppings</strong>
+
+                {% if products.fried_shallots_available %}
+                <label>
+                    <input type="checkbox" id="largeShallots">
+                    Fried Shallots
+                </label>
+                {% endif %}
+
+                {% if products.black_sesame_available %}
+                <label>
+                    <input type="checkbox" id="largeSesame">
+                    Black Sesame
+                </label>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        {% endif %}
+
+
+        {% if products.small_available or products.large_available %}
+
+        <div class="total">
+            <span>Total</span>
+            <span id="totalPrice">RM 0.00</span>
+        </div>
+
+        <button class="review-btn" onclick="reviewOrder()">
+            Review Order
+        </button>
+
+        {% else %}
+
+        <div class="unavailable-message">
+            Sorry! All products are currently unavailable.
+        </div>
+
+        {% endif %}
+
+    {% endif %}
+
+</div>
+
+<script>
+    // Prices are loaded from Admin Product Settings
+    const SMALL_PRICE = {{ products.small_price|tojson }};
+    const LARGE_PRICE = {{ products.large_price|tojson }};
+
+    let smallQty = 0;
+    let largeQty = 0;
+
+    function changeQty(type, amount) {
+
+        if (type === "small") {
+            smallQty = Math.max(0, smallQty + amount);
+            document.getElementById("smallQty").textContent = smallQty;
+        }
+
+        if (type === "large") {
+            largeQty = Math.max(0, largeQty + amount);
+            document.getElementById("largeQty").textContent = largeQty;
+        }
+
+        calculateTotal();
+    }
+
+    function calculateTotal() {
+
+        let total =
+            (smallQty * SMALL_PRICE) +
+            (largeQty * LARGE_PRICE);
+
+        document.getElementById("totalPrice").textContent =
+            "RM " + total.toFixed(2);
+
+        return total;
+    }
+
+    function getCheckboxValue(id) {
+        const checkbox = document.getElementById(id);
+        return checkbox ? checkbox.checked : false;
+    }
+
+    
+
+async function reviewOrder() {
+
+    if (smallQty === 0 && largeQty === 0) {
+        alert("Please select at least one Muah Chee box.");
+        return;
+    }
+
+    const order = {
+        smallQty: smallQty,
+        largeQty: largeQty,
+
+        smallShallots: getCheckboxValue("smallShallots"),
+        smallSesame: getCheckboxValue("smallSesame"),
+
+        largeShallots: getCheckboxValue("largeShallots"),
+        largeSesame: getCheckboxValue("largeSesame")
+    };
+
+    try {
+        const response = await fetch("/review-order", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(order)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            alert(result.message || "Unable to verify order.");
+            return;
+        }
+
+        window.location.href = "/review-order";
+
+    } catch (error) {
+        alert("Unable to connect to the server. Please try again.");
+        console.error(error);
+    }
+}
+
+
+</script>
+
+</body>
+</html>
+
+

@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details - Muah Chee</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            color: #542b19;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header a {
+            color: #542b19;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 19px;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #eadbc8;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            font-size: 15px;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            margin-bottom: 13px;
+        }
+
+        .row:last-child {
+            margin-bottom: 0;
+        }
+
+        .row strong {
+            text-align: right;
+        }
+
+        .total {
+            border-top: 1px solid #eadbc8;
+            padding-top: 12px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #e5d8ca;
+            border-radius: 7px;
+            color: #542b19;
+            background: #fff8ef;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            background: #542b19;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        button:hover {
+            background: #70402a;
+        }
+
+        .payment-paid {
+            color: #28643b;
+        }
+
+        .payment-pending {
+            color: #946400;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <a href="/admin-order-management">←</a>
+        <h2>Order Details</h2>
+        <a href="/admin-dashboard">⌂</a>
+    </div>
+
+    <!-- Order Information -->
+    <div class="card">
+        <h3>Order Information</h3>
+
+        <div class="row">
+            <span>Order Number</span>
+            <strong>#{{ order_id }}</strong>
+        </div>
+
+        <div class="row">
+            <span>Order Type</span>
+            <strong>{{ order["order_type"] }}</strong>
+        </div>
+    </div>
+
+    <!-- Customer Information -->
+    <div class="card">
+        <h3>Customer Information</h3>
+
+        <div class="row">
+            <span>Customer Name</span>
+            <strong>{{ order["customer_name"] }}</strong>
+        </div>
+
+        <div class="row">
+            <span>Phone Number</span>
+            <strong>{{ order["phone_number"] }}</strong>
+        </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="card">
+        <h3>Items</h3>
+
+        {% if order["small"] > 0 %}
+        <div class="row">
+            <span>Small x{{ order["small"] }}</span>
+            <strong>
+                RM{{ "%.2f"|format(order["small_subtotal"]) }}
+            </strong>
+        </div>
+        {% endif %}
+
+        {% if order["large"] > 0 %}
+        <div class="row">
+            <span>Large x{{ order["large"] }}</span>
+            <strong>
+                RM{{ "%.2f"|format(order["large_subtotal"]) }}
+            </strong>
+        </div>
+        {% endif %}
+
+        <h3 style="margin-top: 20px;">Toppings</h3>
+
+        <div class="row">
+            <span>Fried Shallots</span>
+            <strong>{{ order["fried_shallots"] }}</strong>
+        </div>
+
+        <div class="row">
+            <span>Black Sesame</span>
+            <strong>{{ order["black_sesame"] }}</strong>
+        </div>
+
+        <div class="row total">
+            <span>Total Amount</span>
+            <strong>
+                RM{{ "%.2f"|format(order["total"]) }}
+            </strong>
+        </div>
+    </div>
+
+    <!-- Payment Information -->
+    <div class="card">
+        <h3>Payment Information</h3>
+
+        <div class="row">
+            <span>Payment Status</span>
+
+            <strong class="{% if order['payment_status'] == 'Paid' %}payment-paid{% else %}payment-pending{% endif %}">
+                {{ order["payment_status"] }}
+            </strong>
+        </div>
+
+        <div class="row">
+            <span>Payment Method</span>
+            <strong>{{ order["payment_method"] }}</strong>
+        </div>
+    </div>
+
+    <!-- Order Status -->
+    <div class="card">
+        <h3>Order Status</h3>
+
+        <form method="POST">
+
+            <select name="status" required>
+
+                <option value="Pending"
+                    {% if order["order_status"] == "Pending" %}selected{% endif %}>
+                    Pending
+                </option>
+
+                <option value="Preparing"
+                    {% if order["order_status"] == "Preparing" %}selected{% endif %}>
+                    Preparing
+                </option>
+
+                <option value="Completed"
+                    {% if order["order_status"] == "Completed" %}selected{% endif %}>
+                    Completed
+                </option>
+
+            </select>
+
+            <button type="submit">Update Status</button>
+
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>
+

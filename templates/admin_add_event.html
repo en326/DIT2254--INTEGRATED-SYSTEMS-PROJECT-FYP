@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Event Order - Muah Chee</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            color: #542b19;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header a {
+            color: #542b19;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 19px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #eadbc8;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            font-size: 15px;
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 11px;
+            margin-bottom: 14px;
+            border: 1px solid #e5d8ca;
+            border-radius: 7px;
+            background: #fff8ef;
+            color: #542b19;
+            font-size: 13px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 65px;
+        }
+
+        .quantity-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .quantity-row input {
+            width: 85px;
+            margin: 0;
+        }
+
+        .summary {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .total {
+            border-top: 1px solid #eadbc8;
+            padding-top: 12px;
+            font-weight: bold;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            background: #542b19;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .hint {
+            font-size: 11px;
+            color: #806b5d;
+            margin-top: -7px;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <a href="/admin-events">←</a>
+        <h2>Add Event Order</h2>
+        <a href="/admin-dashboard">⌂</a>
+    </div>
+
+    <form method="POST">
+
+        <div class="card">
+
+            <h3>Customer Information</h3>
+
+            <label>Customer Name</label>
+            <input type="text"
+                   name="customer_name"
+                   placeholder="Enter customer name"
+                   required>
+
+            <label>Phone Number</label>
+            <input type="tel"
+                   name="phone_number"
+                   placeholder="Enter phone number"
+                   required>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Event Information</h3>
+
+            <label>Event Date</label>
+            <input type="date"
+                   name="event_date"
+                   required>
+
+            <label>Event Address</label>
+            <textarea name="event_address"
+                      placeholder="Enter delivery address"
+                      required></textarea>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Order Quantities</h3>
+
+            <div class="quantity-row">
+                <span>Small Box - RM3.50</span>
+                <input type="number"
+                       id="small"
+                       name="small"
+                       min="0"
+                       value="0"
+                       oninput="calculateTotal()">
+            </div>
+
+            <div class="quantity-row">
+                <span>Large Box - RM5.00</span>
+                <input type="number"
+                       id="large"
+                       name="large"
+                       min="0"
+                       value="0"
+                       oninput="calculateTotal()">
+            </div>
+
+            <div class="summary">
+                <span>Total Portions</span>
+                <strong id="portions">0</strong>
+            </div>
+
+            <div class="summary total">
+                <span>Estimated Total</span>
+                <strong id="displayTotal">RM0.00</strong>
+            </div>
+
+            <input type="hidden"
+                   name="total"
+                   id="totalInput"
+                   value="0">
+
+            <p class="hint">
+                Total amount is calculated automatically.
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Payment Method</h3>
+
+            <label>Payment Method</label>
+
+            <select name="payment_method" required>
+                <option value="Cash">Cash</option>
+                <option value="Touch 'n Go eWallet">
+                    Touch 'n Go eWallet
+                </option>
+            </select>
+
+        </div>
+
+        <button type="submit">Save Event Order</button>
+
+    </form>
+
+</div>
+
+<script>
+
+function calculateTotal() {
+
+    let small = parseInt(document.getElementById("small").value) || 0;
+    let large = parseInt(document.getElementById("large").value) || 0;
+
+    if (small < 0) small = 0;
+    if (large < 0) large = 0;
+
+    let portions = small + large;
+
+    let total = (small * 3.50) + (large * 5.00);
+
+    document.getElementById("portions").textContent = portions;
+
+    document.getElementById("displayTotal").textContent =
+        "RM" + total.toFixed(2);
+
+    document.getElementById("totalInput").value =
+        total.toFixed(2);
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Payment Details - Muah Chee</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            color: #542b19;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header a {
+            color: #542b19;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        h2 { font-size: 19px; }
+
+        .card {
+            background: white;
+            border: 1px solid #eadbc8;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 15px;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .total {
+            border-top: 1px solid #eadbc8;
+            padding-top: 12px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #eadbc8;
+            border-radius: 7px;
+            background: #fff8ef;
+            color: #542b19;
+            margin-bottom: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            background: #542b19;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <a href="/admin-payments">←</a>
+        <h2>Payment Details</h2>
+        <a href="/admin-dashboard">⌂</a>
+    </div>
+
+    <div class="card">
+
+        <h3>Payment Information</h3>
+
+        <div class="row">
+            <span>Payment ID</span>
+            <strong>{{ payment.payment_id }}</strong>
+        </div>
+
+        <div class="row">
+            <span>Order Number</span>
+            <strong>{{ payment.order_id }}</strong>
+        </div>
+
+        <div class="row">
+            <span>Order Type</span>
+            <strong>{{ payment.order_type }}</strong>
+        </div>
+
+        <div class="row">
+            <span>Customer Name</span>
+            <strong>{{ payment.customer_name }}</strong>
+        </div>
+
+        <div class="row">
+            <span>Payment Method</span>
+            <strong>{{ payment.payment_method }}</strong>
+        </div>
+
+        <div class="row total">
+            <span>Amount Paid</span>
+            <strong>RM{{ "%.2f"|format(payment.amount) }}</strong>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h3>Payment Status</h3>
+
+        <form method="POST">
+
+            <select name="payment_status">
+
+                <option value="Pending"
+                    {% if payment.payment_status == "Pending" %}selected{% endif %}>
+                    Pending
+                </option>
+
+                <option value="Paid"
+                    {% if payment.payment_status == "Paid" %}selected{% endif %}>
+                    Paid
+                </option>
+
+            </select>
+
+            <button type="submit">
+                Update Payment Status
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

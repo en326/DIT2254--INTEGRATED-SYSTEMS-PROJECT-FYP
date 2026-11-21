@@ -1,0 +1,271 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management - Muah Chee</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #fff8ef;
+            color: #542b19;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header a {
+            color: #542b19;
+            text-decoration: none;
+            font-size: 25px;
+        }
+
+        h2 {
+            font-size: 19px;
+            margin: 0;
+        }
+
+        .manual-btn {
+            display: block;
+            width: 100%;
+            padding: 13px;
+            background: #542b19;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .filters button {
+            flex: 1;
+            padding: 10px 4px;
+            border: none;
+            border-radius: 6px;
+            background: #f3e7d5;
+            color: #542b19;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .filters button.active {
+            background: #542b19;
+            color: white;
+        }
+
+        .search {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5d8ca;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .order-card {
+            background: white;
+            border: 1px solid #eadbc8;
+            border-radius: 9px;
+            padding: 13px;
+            margin-bottom: 12px;
+        }
+
+        .order-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .order-number {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .status {
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .Pending {
+            background: #fbe7b5;
+            color: #946400;
+        }
+
+        .Preparing {
+            background: #f9dfad;
+            color: #875000;
+        }
+
+        .Completed {
+            background: #dcefdc;
+            color: #28643b;
+        }
+
+        .order-bottom {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .order-bottom strong {
+            color: #542b19;
+        }
+
+        .view-link {
+            display: block;
+            text-align: right;
+            margin-top: 10px;
+            color: #80513a;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 25px;
+            color: #806b5d;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <a href="/admin-dashboard">←</a>
+        <h2>Order Management</h2>
+        <a href="/admin-dashboard">⌂</a>
+    </div>
+
+    <a href="/admin-manual-order" class="manual-btn">
+        ＋ Add Manual Order
+    </a>
+
+    <div class="filters">
+        <button class="active" onclick="filterOrders('All', this)">All</button>
+        <button onclick="filterOrders('Pending', this)">Pending</button>
+        <button onclick="filterOrders('Preparing', this)">Preparing</button>
+        <button onclick="filterOrders('Completed', this)">Completed</button>
+    </div>
+
+    <input
+        type="text"
+        id="search"
+        class="search"
+        placeholder="Search Order Numbers..."
+        oninput="searchOrders()"
+    >
+
+    <div id="orderList">
+
+        {% for order_id, order in orders.items() %}
+
+<div class="order-card" data-status="{{ order.order_status }}">
+
+    <div class="order-top">
+        <span class="order-number">#{{ order_id }}</span>
+
+        <span class="status {{ order.order_status }}">
+            {{ order.order_status }}
+        </span>
+    </div>
+
+    <div>{{ order["items"] }}</div>
+
+    <div class="order-bottom">
+        <span>Order Total</span>
+        <strong>RM{{ "%.2f"|format(order.total) }}</strong>
+    </div>
+
+    <a href="/admin-order-details/{{ order_id }}" class="view-link">
+        View Details ›
+    </a>
+
+</div>
+
+{% endfor %}
+    </div>
+
+    <div class="empty" id="emptyMessage">
+        No orders found.
+    </div>
+
+</div>
+
+<script>
+    let currentStatus = "All";
+
+    function filterOrders(status, button) {
+        currentStatus = status;
+
+        document.querySelectorAll(".filters button").forEach(btn => {
+            btn.classList.remove("active");
+        });
+
+        button.classList.add("active");
+
+        searchOrders();
+    }
+
+    function searchOrders() {
+        const keyword = document.getElementById("search")
+            .value.toLowerCase();
+
+        const orders = document.querySelectorAll(".order-card");
+        let visibleCount = 0;
+
+        orders.forEach(order => {
+            const orderNumber = order.querySelector(".order-number")
+                .textContent.toLowerCase();
+
+            const status = order.dataset.status;
+
+            const matchSearch = orderNumber.includes(keyword);
+            const matchStatus = currentStatus === "All" ||
+                                status === currentStatus;
+
+            if (matchSearch && matchStatus) {
+                order.style.display = "block";
+                visibleCount++;
+            } else {
+                order.style.display = "none";
+            }
+        });
+
+        document.getElementById("emptyMessage").style.display =
+            visibleCount === 0 ? "block" : "none";
+    }
+</script>
+
+</body>
+</html>
